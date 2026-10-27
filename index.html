@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Two Fluffy Cats Have A Question 🐾</title>
+<meta name="description" content="Two Persian cats have a very important question for you.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#ffe4ef; --bg2:#ffd3e4; --ink:#4a2338; --pink:#ff5c9a; --pink-d:#e23f7f;
+    --card:#fffaf6; --muted:#9a6f84;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%;overflow:hidden}
+  body{
+    font-family:"Baloo 2",system-ui,sans-serif;color:var(--ink);
+    background:radial-gradient(circle at 20% 15%,#fff3f8 0,transparent 40%),
+               radial-gradient(circle at 85% 80%,#ffe9c9 0,transparent 45%),
+               linear-gradient(160deg,var(--bg1),var(--bg2));
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:100dvh;padding:16px;text-align:center;
+  }
+  .float-bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+  .float-bg span{position:absolute;bottom:-40px;font-size:22px;opacity:.55;animation:rise linear infinite}
+  @keyframes rise{to{transform:translateY(-115vh) rotate(25deg)}}
+
+  .stage{position:relative;z-index:1;max-width:560px;width:100%}
+  h1{font-size:clamp(26px,7vw,40px);margin:0 0 4px;line-height:1.1;font-weight:800}
+  .sub{margin:0 0 10px;color:var(--muted);font-size:clamp(15px,4vw,18px)}
+  .cats{display:flex;justify-content:center;align-items:flex-end;gap:4px}
+  .cat{width:min(42vw,220px);filter:drop-shadow(0 10px 12px rgba(120,40,70,.18))}
+  .cat.c1{animation:sway 3.2s ease-in-out infinite}
+  .cat.c2{animation:sway 3.2s ease-in-out infinite reverse}
+  @keyframes sway{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+  .names{display:flex;justify-content:center;gap:clamp(40px,18vw,110px);font-weight:700;color:var(--muted);margin-top:2px}
+  .eyes{transform-box:fill-box;transform-origin:center;animation:blink 4.5s infinite}
+  @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+  .tail{transform-box:fill-box;transform-origin:20% 90%;animation:wag 1.6s ease-in-out infinite}
+  @keyframes wag{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(8deg)}}
+
+  /* popup */
+  .overlay{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;
+    padding:16px;background:rgba(74,35,56,.35);backdrop-filter:blur(3px);
+    opacity:0;pointer-events:none;transition:opacity .3s}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .box{position:relative;width:100%;max-width:380px;background:var(--card);border-radius:28px;
+    padding:84px 22px 24px;box-shadow:0 20px 50px rgba(120,30,70,.3);
+    border:4px solid #ffc2da;transform:scale(.6) translateY(30px);transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
+  .overlay.show .box{transform:none}
+  .box .face{position:absolute;left:50%;top:-78px;width:150px;transform:translateX(-50%);
+    animation:peek 2.4s ease-in-out infinite}
+  @keyframes peek{0%,100%{transform:translateX(-50%) rotate(-4deg)}50%{transform:translateX(-50%) rotate(4deg) translateY(-4px)}}
+  .box h2{margin:0 0 6px;font-size:26px;line-height:1.15}
+  .box p{margin:0 0 18px;color:var(--muted);font-size:16px}
+  .btns{display:flex;justify-content:center;gap:14px;min-height:64px;align-items:center}
+  button{font:inherit;font-weight:800;border:0;border-radius:999px;cursor:pointer;min-height:48px}
+  .yes{background:var(--pink);color:#fff;padding:10px 34px;font-size:20px;
+    box-shadow:0 6px 0 var(--pink-d),0 10px 20px rgba(255,92,154,.4);
+    animation:bob 1.4s ease-in-out infinite;transition:font-size .25s,padding .25s}
+  .yes:active{box-shadow:0 2px 0 var(--pink-d);translate:0 4px}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .no{background:#eee3e8;color:#8a6b7a;padding:10px 22px;font-size:16px;
+    transition:left .25s ease,top .25s ease;white-space:nowrap;z-index:9}
+  .no.run{position:fixed}
+  .tease{min-height:22px;margin-top:12px;font-weight:700;color:var(--pink-d);font-size:15px}
+
+  .field{display:flex;align-items:center;background:#fff;border:3px solid #ffc2da;border-radius:18px;
+    padding:0 14px;margin-bottom:8px;transition:border-color .2s}
+  .field:focus-within{border-color:var(--pink)}
+  .field b{font-size:22px;color:var(--pink)}
+  .field input{flex:1;min-width:0;border:0;outline:0;font:inherit;font-size:20px;padding:12px 6px;background:transparent;color:var(--ink)}
+  .err{min-height:20px;color:#d2335f;font-size:14px;margin-bottom:10px;font-weight:600}
+  .done{background:var(--pink);color:#fff;padding:10px 40px;font-size:20px;box-shadow:0 6px 0 var(--pink-d)}
+  .done:disabled{opacity:.6}
+  .shake{animation:shake .4s}
+  @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+  .confetti{position:fixed;top:-30px;z-index:20;font-size:24px;pointer-events:none;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+  .hidden{display:none}
+  .intro{position:relative;z-index:1;width:100%;max-width:420px}
+  .intro h1{margin-bottom:2px}
+  .from{margin:0 0 18px;font-size:22px;font-weight:700;color:var(--pink-d)}
+  .msgbox{background:var(--card);border:4px solid #ffc2da;border-radius:28px;padding:18px;box-shadow:0 16px 40px rgba(120,30,70,.2)}
+  .msgbox textarea{width:100%;resize:none;border:3px solid #ffc2da;border-radius:18px;padding:12px 14px;font:inherit;font-size:18px;color:var(--ink);outline:0;background:#fff}
+  .msgbox textarea:focus{border-color:var(--pink)}
+  .msgbox .err{margin:6px 0 8px}
+  .stage{animation:popin .5s ease}
+  @keyframes popin{from{opacity:0;transform:scale(.9)}}
+  .box p.big{font-size:20px;font-weight:700;color:var(--ink)}
+</style>
+</head>
+<body>
+
+<!-- Netlify Forms: lets Netlify detect & store the messages -->
+<form name="cutie-message" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <textarea name="message"></textarea>
+  <input type="text" name="bot-field">
+</form>
+
+<div class="float-bg" id="floaters"></div>
+
+<!-- Page 1: hello + message -->
+<section class="intro" id="intro">
+  <h1>Hii impatient cutie!! 💕</h1>
+  <p class="from">Ninad here 👋</p>
+  <div id="msgForm" class="msgbox">
+    <textarea id="msg" maxlength="500" rows="4" placeholder="Write something for me… 💌"></textarea>
+    <div class="err" id="msgErr"></div>
+    <button class="done" id="sendBtn" type="button">Send 💌</button>
+  </div>
+</section>
+
+<main class="stage hidden" id="stage">
+  <h1>Psst… hi cutie 👋</h1>
+  <p class="sub">Two very fluffy cats have something to ask you</p>
+  <div class="cats">
+    <div class="cat c1" id="catBlack"></div>
+    <div class="cat c2" id="catGold"></div>
+  </div>
+  <div class="names"><span>Mochi 🖤</span><span>Honey 🧡</span></div>
+</main>
+
+<!-- Step 1: ask -->
+<div class="overlay" id="askPop">
+  <div class="box">
+    <div class="face" id="faceBlack"></div>
+    <h2>Can I get your Insta ID? 🥺</h2>
+    <div class="btns">
+      <button class="yes" id="yesBtn">Yes 💖</button>
+      <button class="no" id="noBtn">No</button>
+    </div>
+    <div class="tease" id="tease"></div>
+  </div>
+</div>
+
+<!-- Step 2: send on chats -->
+<div class="overlay" id="idPop">
+  <div class="box">
+    <div class="face" id="faceGold"></div>
+    <h2>Yayyy! 🐾</h2>
+    <p class="big">Please send your Insta ID on chats 💌</p>
+    <button class="done" id="okBtn" type="button">OK 💖</button>
+  </div>
+</div>
+
+<!-- Step 3: thanks -->
+<div class="overlay" id="thanksPop">
+  <div class="box">
+    <div class="face" id="faceThanks"></div>
+    <h2>Thanks, beautiful! 💕</h2>
+  </div>
+</div>
+
+<script>
+(function(){
+  // ---------- Persian cat drawing ----------
+  function fluff(cx,cy,rx,ry,n,a){
+    var d='';
+    for(var i=0;i<=n;i++){
+      var t=i/n*Math.PI*2, t2=(i-.5)/n*Math.PI*2;
+      var x=(cx+rx*Math.cos(t)).toFixed(1), y=(cy+ry*Math.sin(t)).toFixed(1);
+      if(i===0) d+='M'+x+' '+y;
+      else d+='Q'+(cx+(rx+a)*Math.cos(t2)).toFixed(1)+' '+(cy+(ry+a)*Math.sin(t2)).toFixed(1)+' '+x+' '+y;
+    }
+    return d+'Z';
+  }
+  function cat(c, faceOnly){
+    var vb = faceOnly ? '28 18 144 130' : '0 10 220 230';
+    var s='<svg viewBox="'+vb+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+c.label+'">';
+    if(!faceOnly){
+      s+='<g class="tail"><path d="'+fluff(178,180,30,18,14,6)+'" fill="'+c.shade+'" transform="rotate(-35 178 180)"/></g>';
+      s+='<path d="'+fluff(100,165,72,62,22,7)+'" fill="'+c.fur+'"/>';
+      s+='<path d="'+fluff(100,150,34,36,14,5)+'" fill="'+c.chest+'"/>';
+      s+='<path d="'+fluff(72,222,20,12,8,4)+'" fill="'+c.fur+'"/><path d="'+fluff(128,222,20,12,8,4)+'" fill="'+c.fur+'"/>';
+      s+='<path d="M64 224v-4M72 225v-5M80 224v-4M120 224v-4M128 225v-5M136 224v-4" stroke="'+c.shade+'" stroke-width="2" stroke-linecap="round"/>';
+    }
+    // ears (small & rounded, Persian style)
+    s+='<path d="M48 62 Q46 28 74 44 Z" fill="'+c.fur+'"/><path d="M152 62 Q154 28 126 44 Z" fill="'+c.fur+'"/>';
+    s+='<path d="M54 56 Q53 37 69 46 Z" fill="#f4a3b8"/><path d="M146 56 Q147 37 131 46 Z" fill="#f4a3b8"/>';
+    // big fluffy head
+    s+='<path d="'+fluff(100,88,64,54,26,7)+'" fill="'+c.fur+'"/>';
+    s+='<path d="'+fluff(100,108,38,24,14,4)+'" fill="'+c.chest+'"/>';
+    // cheeks
+    s+='<ellipse cx="62" cy="108" rx="10" ry="6" fill="#ff8fb0" opacity=".45"/><ellipse cx="138" cy="108" rx="10" ry="6" fill="#ff8fb0" opacity=".45"/>';
+    // eyes
+    s+='<g class="eyes">';
+    [[76,88],[124,88]].forEach(function(p){
+      s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="15" fill="'+c.eye+'" stroke="'+c.eyeRim+'" stroke-width="2"/>';
+      s+='<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="7.5" ry="11" fill="#140f12"/>';
+      s+='<circle cx="'+(p[0]+4)+'" cy="'+(p[1]-5)+'" r="4.5" fill="#fff"/><circle cx="'+(p[0]-4)+'" cy="'+(p[1]+5)+'" r="2" fill="#fff" opacity=".8"/>';
+    });
+    s+='</g>';
+    // flat Persian nose + mouth
+    s+='<path d="M93 101 Q100 97 107 101 L100 108 Z" fill="#e8768f"/>';
+    s+='<path d="M100 108 v4 M100 112 Q94 118 89 113 M100 112 Q106 118 111 113" stroke="'+c.line+'" stroke-width="2.2" fill="none" stroke-linecap="round"/>';
+    // whiskers
+    s+='<path d="M80 108 L44 102 M80 112 L42 114 M120 108 L156 102 M120 112 L158 114" stroke="'+c.whisker+'" stroke-width="1.6" stroke-linecap="round" opacity=".85"/>';
+    if(c.bow) s+='<g transform="translate(140 50) rotate(20)"><path d="M0 0 L-14 -9 L-14 9 Z M0 0 L14 -9 L14 9 Z" fill="#ff5c9a"/><circle r="4.5" fill="#e23f7f"/></g>';
+    return s+'</svg>';
+  }
+  var BLACK={label:'Black Persian cat',fur:'#211d26',shade:'#141118',chest:'#37313f',eye:'#f0952e',eyeRim:'#9c4f10',line:'#b8a8c0',whisker:'#cfc3d6'};
+  var GOLD ={label:'Golden-brown Persian cat',fur:'#d39a52',shade:'#a8702f',chest:'#f3d29d',eye:'#5fae62',eyeRim:'#2f6b34',line:'#7a4a1f',whisker:'#fff4e0',bow:true};
+
+  function $(id){return document.getElementById(id)}
+  $('catBlack').innerHTML=cat(BLACK);
+  $('catGold').innerHTML=cat(GOLD);
+  $('faceBlack').innerHTML=cat(BLACK,true);
+  $('faceGold').innerHTML=cat(GOLD,true);
+  $('faceThanks').innerHTML=cat(GOLD,true);
+
+  // floating hearts & paws
+  var em=['💗','🐾','💕','✨','🐾','💖'], fb=$('floaters');
+  for(var i=0;i<16;i++){
+    var sp=document.createElement('span');
+    sp.textContent=em[i%em.length];
+    sp.style.left=(Math.random()*100)+'%';
+    sp.style.animationDuration=(9+Math.random()*10)+'s';
+    sp.style.animationDelay=(-Math.random()*15)+'s';
+    fb.appendChild(sp);
+  }
+
+  function show(id){['askPop','idPop','thanksPop'].forEach(function(p){$(p).classList.toggle('show',p===id)})}
+  // ---------- page 1: message ----------
+  var msgForm=$('msgForm'), msg=$('msg'), msgErr=$('msgErr'), sendBtn=$('sendBtn');
+  msg.addEventListener('input',function(){msgErr.textContent='';});
+  var sent=false;
+  function goNext(){
+    if(sent) return; sent=true;
+    $('intro').classList.add('hidden');
+    $('stage').classList.remove('hidden');
+    setTimeout(function(){show('askPop')},900);
+  }
+  sendBtn.addEventListener('click',function(){
+    var v=msg.value.trim();
+    if(!v){
+      msgErr.textContent='Write something first, cutie 😿';
+      msgForm.classList.remove('shake'); void msgForm.offsetWidth; msgForm.classList.add('shake');
+      return;
+    }
+    sendBtn.disabled=true; sendBtn.textContent='Sending… 🐾';
+    // save to Netlify only when the site is live online; never block the next page
+    if(/^https?:$/.test(location.protocol)){
+      try{
+        var body=new URLSearchParams({'form-name':'cutie-message','message':v}).toString();
+        fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:body})
+          .then(goNext,goNext);
+      }catch(_){ goNext(); }
+      setTimeout(goNext,2500);
+    } else {
+      setTimeout(goNext,400);
+    }
+  });
+
+  // ---------- runaway "No" button ----------
+  var no=$('noBtn'), yes=$('yesBtn'), tease=$('tease'), tries=0;
+  var lines=['Nice try 😼','Nope, not an option','The button is shy 🙈','Mochi ate the No button','Just press Yes 💖','You’re not escaping this','Error 404: No not found','Pleeeease 🥺'];
+  function runAway(e){
+    if(e){e.preventDefault();}
+    var w=no.offsetWidth, h=no.offsetHeight, vw=window.innerWidth, vh=window.innerHeight, x, y, yr=yes.getBoundingClientRect();
+    for(var k=0;k<20;k++){
+      x=12+Math.random()*(vw-w-24); y=12+Math.random()*(vh-h-24);
+      if(Math.abs(x-yr.left)>w+10 || Math.abs(y-yr.top)>h+10) break;
+    }
+    if(!no.classList.contains('run')){
+      var r=no.getBoundingClientRect();
+      no.style.left=r.left+'px'; no.style.top=r.top+'px'; no.classList.add('run');
+      void no.offsetWidth;
+    }
+    no.style.left=x+'px'; no.style.top=y+'px';
+    tease.textContent=lines[tries%lines.length];
+    tries++;
+    var size=Math.min(20+tries*1.6,30);
+    yes.style.fontSize=size+'px';
+    yes.style.padding=(10+tries)+'px '+(34+tries*2)+'px';
+  }
+  no.addEventListener('mouseenter',runAway);
+  no.addEventListener('touchstart',runAway,{passive:false});
+  no.addEventListener('click',runAway);
+  no.addEventListener('focus',function(){no.blur();});
+
+  yes.addEventListener('click',function(){
+    no.classList.add('hidden');
+    show('idPop');
+  });
+  $('okBtn').addEventListener('click',function(){
+    show('thanksPop');
+    confetti();
+  });
+
+  function confetti(){
+    var bits=['💖','🐾','💕','✨','🌸','😻'];
+    for(var i=0;i<40;i++){
+      var c=document.createElement('div');
+      c.className='confetti';
+      c.textContent=bits[i%bits.length];
+      c.style.left=Math.random()*100+'vw';
+      c.style.animationDuration=(2.2+Math.random()*2.2)+'s';
+      c.style.animationDelay=(Math.random()*.8)+'s';
+      document.body.appendChild(c);
+      setTimeout((function(n){return function(){n.remove()}})(c),5500);
+    }
+  }
+})();
+</script>
+</body>
+</html>
